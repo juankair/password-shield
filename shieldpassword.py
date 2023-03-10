@@ -64,8 +64,13 @@ def addPassword():
     now = datetime.now()
     createdAt = now.strftime("%d/%m/%Y %H:%M:%S")
 
-    data = [
-        {
+    # Fetch Encrypt Data
+    f = open("secure.lambda", "r")
+    todec = f.read().encode()
+    decrypted = fernet.decrypt(todec).decode()
+    dataPassword = json.loads(decrypted)
+
+    data = {
             'platform': platform,
             'group': group,
             'host': host,
@@ -74,15 +79,17 @@ def addPassword():
             'createdAt': createdAt,
             'trackingChanges': []
         }
-    ]
+        
+    
 
-    data_enc = json.dumps(data)
+    dataPassword.append(data)
+
+    data_enc = json.dumps(dataPassword)
     ex = data_enc.encode()
     encrypted = fernet.encrypt(ex)
     # # MODIFY FILE
     f = open("secure.lambda", "w")
     f.write(encrypted.decode())
-    print(encrypted)
 
 
 def deletePassword():
